@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  nombre    String
+  cedula    String?  @unique
+  password  String
+  imagenUrl String?
+  role      String   @default("ESTUDIANTE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pedidos Pedido[]
+
+  @@map("users")
+}
+
+model Producto {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  precio      Float
+  imagenUrl   String?
+  disponible  Boolean  @default(true)
+  categoria   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pedidoItems PedidoItem[]
+  variantes   Variante[]
+
+  @@map("productos")
+}
+
+model Pedido {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  fechaPedido   DateTime @default(now())
+  estado        String   @default("PENDIENTE")
+  total         Float
+  observaciones String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user  User         @relation(fields: [userId], references: [id])
+  items PedidoItem[]
+
+  @@map("pedidos")
+}
+
+model PedidoItem {
+  id             Int     @id @default(autoincrement())
+  pedidoId       Int
+  productoId     Int
+  cantidad       Int
+  precioUnitario Float
+  subtotal       Float
+
+  pedido         Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  producto       Producto @relation(fields: [productoId], references: [id])
+  varianteNombre String?
+
+  @@map("pedido_items")
+}
+
+model Variante {
+  id         Int      @id @default(autoincrement())
+  nombre     String
+  precio     Float
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@map("variantes")
+}
