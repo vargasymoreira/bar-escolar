@@ -1,11 +1,4 @@
-import "dotenv/config";
-
-export default {
-  schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
-  datasource: {
-    url: process.env.DATABASE_URL,
-  },
-};
+// prisma/config no está disponible en Prisma v5.
+// La configuración de Prisma se maneja directamente en prisma/schema.prisma
+// Este archivo puede ignorarse de forma segura para Prisma ^5.x
+export { };
