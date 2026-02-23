@@ -1,0 +1,59 @@
+<div class="detalle-container">
+    <div *ngIf="loading" class="loading">
+        <p>Cargando pedido...</p>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+        <p>{{ error }}</p>
+        <button (click)="volver()">Volver a Mis Pedidos</button>
+    </div>
+
+    <div *ngIf="!loading && !error && pedido" class="detalle-content">
+        <header class="detalle-header">
+            <div class="header-top">
+                <button (click)="volver()" class="back-btn">← Volver</button>
+                <span class="fecha-badge">{{ formatFecha(pedido.fechaPedido) }}</span>
+            </div>
+            <div class="header-main">
+                <h1>Pedido #{{ pedido.id }}</h1>
+                <span [class]="'estado-badge ' + getEstadoClass(pedido.estado)">
+                    {{ getEstadoTexto(pedido.estado) }}
+                </span>
+            </div>
+        </header>
+
+        <div class="items-card">
+            <h2>Productos</h2>
+            <div class="items-table">
+                <div class="table-header">
+                    <div class="col-producto">Producto</div>
+                    <div class="col-cantidad">Cantidad</div>
+                    <div class="col-precio">Precio Unit.</div>
+                    <div class="col-subtotal">Subtotal</div>
+                </div>
+                <div *ngFor="let item of pedido.items" class="table-row">
+                    <div class="col-producto">
+                        <strong>{{ item.producto.nombre }}</strong>
+                        <span *ngIf="item.varianteNombre" class="variant-badge">{{ item.varianteNombre }}</span>
+                        <p class="producto-desc">{{ item.producto.descripcion }}</p>
+                    </div>
+                    <div class="col-cantidad">{{ item.cantidad }}</div>
+                    <div class="col-precio">${{ item.precioUnitario.toFixed(2) }}</div>
+                    <div class="col-subtotal">${{ (+item.subtotal).toFixed(2) }}</div>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span class="total-amount">${{ (+pedido.total).toFixed(2) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="pedido.observaciones" class="observaciones-card">
+            <h3>Observaciones:</h3>
+            <p>{{ pedido.observaciones }}</p>
+        </div>
+    </div>
+</div>

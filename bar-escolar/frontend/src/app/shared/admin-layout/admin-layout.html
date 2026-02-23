@@ -1,0 +1,105 @@
+<div class="admin-layout" [class.sidebar-collapsed]="sidebarCollapsed">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Profile Section -->
+    <div class="sidebar-profile">
+      <div class="profile-avatar">
+        <img *ngIf="currentUser?.imagenUrl; else defaultAvatar" [src]="getImageUrl(currentUser.imagenUrl)"
+          alt="Profile">
+        <ng-template #defaultAvatar>
+          <img src="/assets/default-avatar.png" alt="Profile"
+            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23667eea%22 stroke-width=%222%22%3E%3Cpath d=%22M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E'" />
+        </ng-template>
+      </div>
+      <div class="profile-info" *ngIf="!sidebarCollapsed">
+        <h3>{{ adminName }}</h3>
+        <p>Administrador</p>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-item">
+        <lucide-icon [img]="LayoutDashboard" [size]="24" class="nav-icon"></lucide-icon>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Dashboard</span>
+      </a>
+
+      <a routerLink="/admin/estadisticas" routerLinkActive="active" class="nav-item">
+        <lucide-icon [img]="BarChart3" [size]="24" class="nav-icon"></lucide-icon>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Estadísticas</span>
+      </a>
+
+      <a routerLink="/admin/gestion-menu" routerLinkActive="active" class="nav-item">
+        <lucide-icon [img]="Package" [size]="24" class="nav-icon"></lucide-icon>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Productos</span>
+      </a>
+
+      <a routerLink="/admin/lista-pedidos" routerLinkActive="active" class="nav-item">
+        <lucide-icon [img]="ShoppingCart" [size]="24" class="nav-icon"></lucide-icon>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Pedidos</span>
+      </a>
+    </nav>
+
+    <!-- Toggle Button -->
+    <button class="sidebar-toggle" (click)="toggleSidebar()" title="Colapsar/Expandir sidebar">
+      <lucide-icon [img]="sidebarCollapsed ? ChevronRight : ChevronLeft" [size]="20"></lucide-icon>
+    </button>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Navbar -->
+    <header class="navbar">
+      <div class="navbar-left">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" (click)="toggleSidebar()">
+          <lucide-icon [img]="Menu" [size]="24"></lucide-icon>
+        </button>
+
+        <h1 class="navbar-brand">
+          <lucide-icon [img]="UtensilsCrossed" [size]="28" class="brand-icon"></lucide-icon>
+          <span class="brand-text">Bar Escolar</span>
+        </h1>
+      </div>
+
+      <div class="navbar-right">
+        <div class="navbar-profile" (click)="toggleProfileDropdown()">
+          <div class="profile-avatar-small">
+            <img *ngIf="currentUser?.imagenUrl; else defaultSmallAvatar" [src]="getImageUrl(currentUser.imagenUrl)"
+              alt="Profile">
+            <ng-template #defaultSmallAvatar>
+              <img src="/assets/default-avatar.png" alt="Profile"
+                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23667eea%22 stroke-width=%222%22%3E%3Cpath d=%22M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E'" />
+            </ng-template>
+          </div>
+          <div class="profile-details">
+            <span class="profile-name">{{ adminName }}</span>
+            <span class="profile-role">Administrador</span>
+          </div>
+        </div>
+
+        <!-- Profile Dropdown -->
+        <div class="profile-dropdown" *ngIf="showProfileDropdown">
+          <div class="dropdown-item" routerLink="/admin/perfil" (click)="showProfileDropdown = false">
+            <lucide-icon [img]="User" [size]="18"></lucide-icon>
+            <span>Mi Perfil</span>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item logout" (click)="logout()">
+            <lucide-icon [img]="LogOut" [size]="18"></lucide-icon>
+            <span>Cerrar Sesión</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<!-- Overlay for mobile -->
+<div class="overlay" *ngIf="sidebarCollapsed" (click)="toggleSidebar()"></div>

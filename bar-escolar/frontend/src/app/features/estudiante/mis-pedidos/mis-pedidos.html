@@ -1,0 +1,67 @@
+<div class="mis-pedidos">
+    <!-- Top Navigation Bar -->
+    <div class="top-navbar">
+        <a routerLink="/menu" class="back-button">
+            <lucide-icon [img]="ArrowLeft" [size]="20"></lucide-icon>
+            <span>Regresar al Menú</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading">
+            <p>Cargando pedidos...</p>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="error" class="error-message">
+            <p>{{ error }}</p>
+            <button (click)="loadPedidos()">Reintentar</button>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && !error && pedidos.length === 0" class="empty-state">
+            <h2>No tienes pedidos aún</h2>
+            <p>Realiza tu primer pedido desde el menú</p>
+            <a routerLink="/menu" class="btn-primary">Ver Menú</a>
+        </div>
+
+        <!-- Pedidos Container -->
+        <div *ngIf="!loading && !error && pedidos.length > 0" class="pedidos-container">
+            <div class="container-header">
+                <lucide-icon [img]="ClipboardList" [size]="28" class="header-icon"></lucide-icon>
+                <h2>Mis Pedidos</h2>
+            </div>
+
+            <div class="pedidos-list">
+                <div *ngFor="let pedido of pedidos" class="pedido-card" (click)="verDetalle(pedido.id)">
+                    <div class="pedido-header-card">
+                        <div class="pedido-id">
+                            <strong>Pedido #{{ pedido.id }}</strong>
+                        </div>
+                        <span [class]="'estado-badge ' + getEstadoClass(pedido.estado)">
+                            {{ getEstadoTexto(pedido.estado) }}
+                        </span>
+                    </div>
+
+                    <div class="pedido-info">
+                        <p class="fecha">
+                            <span class="label">Fecha:</span>
+                            {{ formatFecha(pedido.fechaPedido) }}
+                        </p>
+                        <p class="items-count">
+                            <span class="label">Productos:</span>
+                            {{ pedido.items.length }} item(s)
+                        </p>
+                    </div>
+
+                    <div class="pedido-footer">
+                        <p class="total">Total: ${{ (+pedido.total).toFixed(2) }}</p>
+                        <button class="ver-detalle-btn">Ver Detalle →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

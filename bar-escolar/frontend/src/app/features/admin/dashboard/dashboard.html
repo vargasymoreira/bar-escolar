@@ -1,0 +1,211 @@
+<div class="dashboard-container">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <div>
+      <h1 class="dashboard-title">Dashboard de Administración</h1>
+      <p class="dashboard-subtitle">Bienvenido, {{ adminName }}</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando información...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    <!-- SECCIÓN: Pedidos Activos -->
+    <div class="pedidos-activos-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <lucide-icon
+            [img]="AlertCircle"
+            [size]="24"
+            class="section-icon"
+          ></lucide-icon>
+          Pedidos Activos
+          <span
+            class="badge-count"
+            *ngIf="pedidosPendientes.length + pedidosEnPreparacion.length > 0"
+          >
+            {{ pedidosPendientes.length + pedidosEnPreparacion.length }}
+          </span>
+        </h3>
+      </div>
+
+      <!-- Loading Pedidos -->
+      <div *ngIf="loadingPedidos" class="loading-pedidos">
+        <div class="spinner-small"></div>
+        <p>Actualizando pedidos...</p>
+      </div>
+
+      <!-- Sin pedidos activos -->
+      <div
+        *ngIf="
+          !loadingPedidos &&
+          pedidosPendientes.length === 0 &&
+          pedidosEnPreparacion.length === 0
+        "
+        class="no-pedidos"
+      >
+        <lucide-icon
+          [img]="CheckCircle"
+          [size]="48"
+          class="no-pedidos-icon"
+        ></lucide-icon>
+        <p>No hay pedidos pendientes en este momento</p>
+      </div>
+
+      <!-- Grid de Pedidos -->
+      <div
+        *ngIf="
+          !loadingPedidos &&
+          (pedidosPendientes.length > 0 || pedidosEnPreparacion.length > 0)
+        "
+        class="pedidos-grid"
+      >
+        <!-- Pedidos Pendientes -->
+        <div
+          *ngFor="let pedido of pedidosPendientes"
+          class="pedido-card pendiente"
+        >
+          <div class="pedido-header">
+            <div class="pedido-info">
+              <h4 class="pedido-estudiante">
+                {{ pedido.user?.nombre || "Cliente" }}
+              </h4>
+              <p class="pedido-hora">
+                <lucide-icon [img]="Clock" [size]="14"></lucide-icon>
+                {{ getHoraFormateada(pedido.fechaPedido) }}
+              </p>
+            </div>
+            <span class="badge" [ngClass]="getEstadoBadgeClass(pedido.estado)">
+              {{ getEstadoTexto(pedido.estado) }}
+            </span>
+          </div>
+
+          <div class="pedido-items">
+            <div *ngFor="let item of pedido.items" class="pedido-item">
+              <span class="item-cantidad">{{ item.cantidad }}x</span>
+              <span class="item-nombre">{{ item.producto.nombre }}</span>
+            </div>
+          </div>
+
+          <div class="pedido-footer">
+            <div class="pedido-total">
+              <span class="total-label">Total:</span>
+              <span class="total-value">${{ pedido.total.toFixed(2) }}</span>
+            </div>
+            <button
+              class="btn-preparar"
+              (click)="marcarComoEnPreparacion(pedido.id)"
+            >
+              Preparar Pedido
+            </button>
+          </div>
+        </div>
+
+        <!-- Pedidos En Preparación -->
+        <div
+          *ngFor="let pedido of pedidosEnPreparacion"
+          class="pedido-card en-preparacion"
+        >
+          <div class="pedido-header">
+            <div class="pedido-info">
+              <h4 class="pedido-estudiante">
+                {{ pedido.user?.nombre || "Cliente" }}
+              </h4>
+              <p class="pedido-hora">
+                <lucide-icon [img]="Clock" [size]="14"></lucide-icon>
+                {{ getHoraFormateada(pedido.fechaPedido) }}
+              </p>
+            </div>
+            <span class="badge" [ngClass]="getEstadoBadgeClass(pedido.estado)">
+              {{ getEstadoTexto(pedido.estado) }}
+            </span>
+          </div>
+
+          <div class="pedido-items">
+            <div *ngFor="let item of pedido.items" class="pedido-item">
+              <span class="item-cantidad">{{ item.cantidad }}x</span>
+              <span class="item-nombre">{{ item.producto.nombre }}</span>
+            </div>
+          </div>
+
+          <div class="pedido-footer">
+            <div class="pedido-total">
+              <span class="total-label">Total:</span>
+              <span class="total-value">${{ pedido.total.toFixed(2) }}</span>
+            </div>
+            <button class="btn-listo" (click)="marcarComoListo(pedido.id)">
+              Marcar Listo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon revenue">
+          <lucide-icon [img]="DollarSign" [size]="24"></lucide-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Ingresos Totales</p>
+          <h3 class="stat-value">${{ summary.totalIngresos.toFixed(2) }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon orders">
+          <lucide-icon [img]="ShoppingCart" [size]="24"></lucide-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Total Pedidos</p>
+          <h3 class="stat-value">{{ summary.totalPedidos }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon today">
+          <lucide-icon [img]="TrendingUp" [size]="24"></lucide-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Pedidos Hoy</p>
+          <h3 class="stat-value">{{ summary.pedidosHoy }}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon products">
+          <lucide-icon [img]="Package" [size]="24"></lucide-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-label">Productos Disponibles</p>
+          <h3 class="stat-value">{{ summary.totalProductos }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+      <h3 class="section-title">Acciones Rápidas</h3>
+      <div class="actions-grid">
+        <a routerLink="/admin/estadisticas" class="action-card">
+          <lucide-icon [img]="BarChart3" [size]="28"></lucide-icon>
+          <span>Ver Estadísticas</span>
+        </a>
+        <a routerLink="/admin/gestion-menu" class="action-card">
+          <lucide-icon [img]="Package" [size]="28"></lucide-icon>
+          <span>Gestionar Productos</span>
+        </a>
+        <a routerLink="/admin/lista-pedidos" class="action-card">
+          <lucide-icon [img]="ShoppingCart" [size]="28"></lucide-icon>
+          <span>Ver Todos los Pedidos</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

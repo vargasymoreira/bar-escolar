@@ -1,0 +1,102 @@
+<div class="menu-container">
+    <!-- Header -->
+    <div class="menu-header">
+        <h1>Menú del Bar Escolar</h1>
+    </div>
+
+    <!-- Category Navigation Bar -->
+    <div *ngIf="!loading && !error" class="categories-nav">
+        <div class="categories-container">
+            <button class="category-btn" [class.active]="selectedCategory === 'TODAS'"
+                (click)="selectedCategory = 'TODAS'; onCategoryChange()">
+                Todas
+            </button>
+            <button *ngFor="let cat of categorias" class="category-btn" [class.active]="selectedCategory === cat"
+                (click)="selectedCategory = cat; onCategoryChange()">
+                {{ cat }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div *ngIf="!loading && !error" class="search-section">
+        <div class="search-bar">
+            <lucide-icon [img]="Search" [size]="20" class="search-icon"></lucide-icon>
+            <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()" placeholder="Buscar productos..."
+                class="search-input" />
+        </div>
+    </div>
+
+    <!-- Modern Loading State -->
+    <div *ngIf="loading" class="loading-container">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <p>Cargando productos...</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-state">
+        <p>{{ error }}</p>
+        <button (click)="loadProductos()" class="retry-btn">Reintentar</button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && productosFiltrados.length === 0" class="empty-state">
+        <p>No hay productos disponibles</p>
+    </div>
+
+    <!-- Products Grid - NO CATEGORY HEADERS -->
+    <div *ngIf="!loading && !error && productosFiltrados.length > 0" class="products-content">
+        <div class="products-grid">
+            <div *ngFor="let producto of productosFiltrados" class="product-card">
+                <!-- Product Image -->
+                <div class="product-image">
+                    <img [src]="getImageUrl(producto.imagenUrl)" [alt]="producto.nombre"
+                        (error)="$event.target.src='https://via.placeholder.com/400x300?text=Sin+Imagen'" />
+                    <span class="product-badge">{{ producto.categoria || 'Sin categoría' }}</span>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info">
+                    <h3 class="product-name">{{ producto.nombre }}</h3>
+                    <p class="product-description">{{ producto.descripcion || 'Delicioso producto' }}</p>
+
+                    <div *ngIf="producto.variantes && producto.variantes.length > 0" class="variant-selector">
+                        <select [ngModel]="selectedVariantes[producto.id]"
+                            (ngModelChange)="onVarianteChange(producto.id, $event)" class="variant-select">
+                            <option *ngFor="let v of producto.variantes" [ngValue]="v">
+                                {{ v.nombre }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="product-footer">
+                        <div class="price-section">
+                            <span class="price-label">Precio</span>
+                            <span class="price-value">${{ (selectedVariantes[producto.id]?.precio || producto.precio) |
+                                number:'1.2-2' }}</span>
+                        </div>
+
+                        <div class="add-to-cart-section">
+                            <div class="quantity-selector">
+                                <button class="qty-btn" (click)="decrementQuantity(producto.id)"
+                                    [disabled]="(selectedQuantities[producto.id] || 1) <= 1">
+                                    <lucide-icon [img]="Minus" [size]="16"></lucide-icon>
+                                </button>
+                                <span class="quantity">{{ selectedQuantities[producto.id] || 1 }}</span>
+                                <button class="qty-btn" (click)="incrementQuantity(producto.id)">
+                                    <lucide-icon [img]="Plus" [size]="16"></lucide-icon>
+                                </button>
+                            </div>
+                            <button class="add-btn" (click)="addToCart(producto)">
+                                <lucide-icon [img]="ShoppingCart" [size]="18"></lucide-icon>
+                                <span>Agregar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

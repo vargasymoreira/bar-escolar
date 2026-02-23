@@ -1,0 +1,88 @@
+<div class="detalle-container">
+    <div *ngIf="loading" class="loading">
+        <p>Cargando pedido...</p>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+        <p>{{ error }}</p>
+        <button (click)="volver()">Volver a Pedidos</button>
+    </div>
+
+    <div *ngIf="!loading && !error && pedido" class="detalle-content">
+        <header class="detalle-header">
+            <button (click)="volver()" class="back-btn">← Volver</button>
+            <h1>Pedido #{{ pedido.id }}</h1>
+            <span [class]="'estado-badge ' + getEstadoClass(pedido.estado)">
+                {{ pedido.estado.replace('_', ' ') }}
+            </span>
+        </header>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h2>Información del Cliente</h2>
+                <div class="info-item">
+                    <span class="label">Nombre:</span>
+                    <span class="value">{{ pedido.user?.nombre || 'N/A' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ pedido.user?.email || 'N/A' }}</span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2>Información del Pedido</h2>
+                <div class="info-item">
+                    <span class="label">Fecha:</span>
+                    <span class="value">{{ formatFecha(pedido.fechaPedido) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Total:</span>
+                    <span class="value total-amount">${{ (+pedido.total).toFixed(2) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="estado-card">
+            <h2>Cambiar Estado del Pedido</h2>
+            <div class="estado-selector">
+                <select [value]="pedido.estado" (change)="cambiarEstado($any($event.target).value)"
+                    class="estado-select-large">
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="EN_PREPARACION">En Preparación</option>
+                    <option value="LISTO">Listo para Entregar</option>
+                    <option value="ENTREGADO">Entregado</option>
+                    <option value="CANCELADO">Cancelado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="items-card">
+            <h2>Productos del Pedido</h2>
+            <div class="items-table">
+                <div class="table-header">
+                    <div class="col-producto">Producto</div>
+                    <div class="col-cantidad">Cantidad</div>
+                    <div class="col-precio">Precio Unit.</div>
+                    <div class="col-subtotal">Subtotal</div>
+                </div>
+                <div *ngFor="let item of pedido.items" class="table-row">
+                    <div class="col-producto">
+                        <strong>{{ item.producto.nombre }}</strong>
+                        <p class="producto-desc">{{ item.producto.descripcion }}</p>
+                    </div>
+                    <div class="col-cantidad">{{ item.cantidad }}</div>
+                    <div class="col-precio">${{ item.precioUnitario.toFixed(2) }}</div>
+                    <div class="col-subtotal">${{ (+item.subtotal).toFixed(2) }}</div>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-row">
+                    <span>Total del Pedido:</span>
+                    <span class="total-amount">${{ (+pedido.total).toFixed(2) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

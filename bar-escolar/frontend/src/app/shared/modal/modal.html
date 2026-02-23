@@ -1,0 +1,16 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal-container" [class]="'modal-' + size">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">{{ title }}</h2>
+            <button *ngIf="showCloseButton" type="button" class="close-button" (click)="onClose()" aria-label="Cerrar">
+                <lucide-icon [img]="X" [size]="20"></lucide-icon>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

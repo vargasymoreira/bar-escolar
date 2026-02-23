@@ -1,0 +1,149 @@
+<div class="lista-pedidos-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">
+          <lucide-icon [img]="ClipboardList" [size]="32" class="title-icon"></lucide-icon>
+          Gestión de Pedidos
+        </h1>
+        <p class="page-subtitle">
+          Administra todos los pedidos del bar escolar
+        </p>
+      </div>
+      <div class="header-stats">
+        <div class="stat-pill">
+          <span class="stat-label">Total:</span>
+          <span class="stat-value">{{ pedidos.length }}</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Filtrados:</span>
+          <span class="stat-value">{{ pedidosFiltrados.length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <lucide-icon [img]="Filter" [size]="20" class="filter-icon"></lucide-icon>
+      <label class="filter-label">Filtrar por estado:</label>
+      <div class="filter-chips">
+        <button class="filter-chip" [class.active]="filtroEstado === 'TODOS'" (click)="cambiarFiltro('TODOS')">
+          <lucide-icon [img]="List" [size]="16"></lucide-icon>
+          <span>Todos</span>
+          <span class="chip-count">{{ contarPorEstado("TODOS") }}</span>
+        </button>
+        <button class="filter-chip pendiente" [class.active]="filtroEstado === 'PENDIENTE'"
+          (click)="cambiarFiltro('PENDIENTE')">
+          <lucide-icon [img]="Clock" [size]="16"></lucide-icon>
+          <span>Pendientes</span>
+          <span class="chip-count">{{ contarPorEstado("PENDIENTE") }}</span>
+        </button>
+        <button class="filter-chip preparacion" [class.active]="filtroEstado === 'EN_PREPARACION'"
+          (click)="cambiarFiltro('EN_PREPARACION')">
+          <lucide-icon [img]="ChefHat" [size]="16"></lucide-icon>
+          <span>En Preparación</span>
+          <span class="chip-count">{{
+            contarPorEstado("EN_PREPARACION")
+            }}</span>
+        </button>
+        <button class="filter-chip listo" [class.active]="filtroEstado === 'LISTO'" (click)="cambiarFiltro('LISTO')">
+          <lucide-icon [img]="CheckCircle2" [size]="16"></lucide-icon>
+          <span>Listos</span>
+          <span class="chip-count">{{ contarPorEstado("LISTO") }}</span>
+        </button>
+
+        <button class="filter-chip cancelado" [class.active]="filtroEstado === 'CANCELADO'"
+          (click)="cambiarFiltro('CANCELADO')">
+          <lucide-icon [img]="XCircle" [size]="16"></lucide-icon>
+          <span>Cancelados</span>
+          <span class="chip-count">{{ contarPorEstado("CANCELADO") }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando pedidos...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && pedidosFiltrados.length === 0" class="empty-state">
+    <lucide-icon [img]="FileX" [size]="64" class="empty-icon"></lucide-icon>
+    <h3>No hay pedidos</h3>
+    <p>No se encontraron pedidos con el filtro seleccionado</p>
+  </div>
+
+  <!-- Pedidos Grid -->
+  <div *ngIf="!loading && pedidosFiltrados.length > 0" class="pedidos-grid">
+    <div *ngFor="let pedido of pedidosFiltrados" class="pedido-card" (click)="verDetalle(pedido.id)">
+      <!-- Card Header -->
+      <div class="pedido-card-header">
+        <div class="pedido-id">
+          <span class="id-label">Pedido</span>
+          <span class="id-number">#{{ pedido.id }}</span>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="pedido-card-body">
+        <!-- Cliente -->
+        <div class="info-row">
+          <lucide-icon [img]="User" [size]="18" class="info-icon"></lucide-icon>
+          <div class="info-content">
+            <span class="info-label">Cliente</span>
+            <span class="info-value">{{ pedido.user?.nombre || "N/A" }}</span>
+          </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="info-row">
+          <lucide-icon [img]="Calendar" [size]="18" class="info-icon"></lucide-icon>
+          <div class="info-content">
+            <span class="info-label">Fecha</span>
+            <span class="info-value">{{
+              formatFecha(pedido.fechaPedido)
+              }}</span>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="info-row">
+          <lucide-icon [img]="ShoppingBag" [size]="18" class="info-icon"></lucide-icon>
+          <div class="info-content">
+            <span class="info-label">Productos</span>
+            <span class="info-value">{{ pedido.items.length }} item(s)</span>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="info-row total">
+          <lucide-icon [img]="DollarSign" [size]="18" class="info-icon"></lucide-icon>
+          <div class="info-content">
+            <span class="info-label">Total</span>
+            <span class="info-value total-value">${{ (+pedido.total).toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="pedido-card-footer" (click)="$event.stopPropagation()">
+        <select class="estado-select" [value]="pedido.estado"
+          (change)="cambiarEstado(pedido.id, $any($event.target).value)">
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="EN_PREPARACION">En Preparación</option>
+          <option value="LISTO">Listo</option>
+          <option value="CANCELADO">Cancelado</option>
+        </select>
+        <button class="btn-ver-detalle" (click)="verDetalle(pedido.id); $event.stopPropagation()">
+          <lucide-icon [img]="Eye" [size]="16"></lucide-icon>
+          Ver Detalle
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

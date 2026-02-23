@@ -1,0 +1,197 @@
+/* ============================================
+   DIALOG BACKDROP
+   ============================================ */
+
+.dialog-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   DIALOG CONTAINER
+   ============================================ */
+
+.dialog-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 100%;
+    padding: 32px;
+    text-align: center;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   DIALOG ICON
+   ============================================ */
+
+.dialog-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-warning {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.icon-danger {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.icon-info {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+/* ============================================
+   DIALOG CONTENT
+   ============================================ */
+
+.dialog-content {
+    margin-bottom: 32px;
+}
+
+.dialog-title {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1f36;
+}
+
+.dialog-message {
+    margin: 0;
+    font-size: 15px;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+/* ============================================
+   DIALOG ACTIONS
+   ============================================ */
+
+.dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.dialog-btn {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.btn-cancel:hover {
+    background: #e5e7eb;
+    color: #1a1f36;
+}
+
+.btn-confirm {
+    color: white;
+}
+
+.btn-warning {
+    background: #f59e0b;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+}
+
+.btn-danger {
+    background: #ef4444;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-info {
+    background: #3b82f6;
+}
+
+.btn-info:hover {
+    background: #2563eb;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .dialog-container {
+        padding: 24px;
+    }
+
+    .dialog-icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .dialog-icon lucide-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dialog-title {
+        font-size: 20px;
+    }
+
+    .dialog-actions {
+        flex-direction: column-reverse;
+    }
+
+    .dialog-btn {
+        width: 100%;
+    }
+}

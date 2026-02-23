@@ -1,0 +1,276 @@
+.detalle-container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    padding: 20px;
+}
+
+.loading,
+.error-message {
+    max-width: 800px;
+    margin: 40px auto;
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.error-message button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.detalle-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.detalle-header {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.fecha-badge {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.back-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: #667eea;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.back-btn:hover {
+    color: #5a67d8;
+    background: transparent;
+    text-decoration: underline;
+}
+
+.detalle-header h1 {
+    flex: 1;
+    margin: 0;
+    color: #2d3748;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.estado-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.estado-pendiente {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.estado-preparacion {
+    background: #cfe2ff;
+    color: #084298;
+    border: 1px solid #b6d4fe;
+}
+
+.estado-listo {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+.estado-entregado {
+    background: #e2e3e5;
+    color: #41464b;
+    border: 1px solid #d3d6d8;
+}
+
+.estado-cancelado {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+}
+
+.items-card,
+.observaciones-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.items-card h2 {
+    margin: 0 0 20px 0;
+    color: #2d3748;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.items-table {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-header,
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 15px;
+    padding: 15px;
+    align-items: center;
+}
+
+.table-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-row {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.col-producto strong {
+    display: block;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.producto-desc {
+    color: #666;
+    font-size: 13px;
+    margin: 0;
+}
+
+.col-cantidad,
+.col-precio,
+.col-subtotal {
+    text-align: right;
+    font-weight: 600;
+    color: #333;
+}
+
+.total-section {
+    padding: 20px;
+    border-top: 2px solid #dee2e6;
+    background: #f8f9fa;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.observaciones-card h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.observaciones-card p {
+    margin: 0;
+    color: #666;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .detalle-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .back-btn {
+        align-self: flex-start;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .col-cantidad,
+    .col-precio,
+    .col-subtotal {
+        text-align: left;
+    }
+
+    .col-cantidad::before {
+        content: 'Cantidad: ';
+        font-weight: normal;
+        color: #666;
+    }
+
+    .col-precio::before {
+        content: 'Precio: ';
+        font-weight: normal;
+        color: #666;
+    }
+
+    .col-subtotal::before {
+        content: 'Subtotal: ';
+        font-weight: normal;
+        color: #666;
+    }
+
+    .table-header {
+        display: none;
+    }
+}
+
+.variant-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #eef2ff;
+    color: #667eea;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 5px;
+    vertical-align: middle;
+    border: 1px solid #c7d2fe;
+}

@@ -1,0 +1,299 @@
+<div class="gestion-menu-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">
+          <lucide-icon [img]="Package" [size]="32" class="title-icon"></lucide-icon>
+          Gestión de Productos
+        </h1>
+        <p class="page-subtitle">
+          Administra el catálogo de productos del bar escolar
+        </p>
+      </div>
+      <button class="btn-add" (click)="openForm()">
+        <lucide-icon [img]="Plus" [size]="20"></lucide-icon>
+        <span>Agregar Producto</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-icon">
+        <lucide-icon [img]="Package" [size]="20"></lucide-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Total Productos</span>
+        <span class="stat-value">{{ productos.length }}</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon disponible">
+        <lucide-icon [img]="CheckCircle2" [size]="20"></lucide-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">Disponibles</span>
+        <span class="stat-value">{{ contarDisponibles() }}</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon no-disponible">
+        <lucide-icon [img]="XCircle" [size]="20"></lucide-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-label">No Disponibles</span>
+        <span class="stat-value">{{
+          productos.length - contarDisponibles()
+          }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Navigation Bar -->
+  <div *ngIf="!loading && productos.length > 0" class="categories-nav">
+    <div class="categories-container">
+      <button class="category-btn" [class.active]="selectedCategory === 'TODAS'"
+        (click)="selectedCategory = 'TODAS'; onCategoryChange()">
+        Todas
+      </button>
+      <button *ngFor="let cat of categorias" class="category-btn" [class.active]="selectedCategory === cat"
+        (click)="selectedCategory = cat; onCategoryChange()">
+        {{ cat }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Availability Filters -->
+  <div *ngIf="!loading && productos.length > 0" class="filters-wrapper">
+    <div class="search-container">
+      <div class="search-bar">
+        <lucide-icon [img]="Search" [size]="20" class="search-icon"></lucide-icon>
+        <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()" placeholder="Buscar productos..."
+          class="search-input" />
+      </div>
+    </div>
+
+    <div class="availability-container">
+      <div class="availability-filter">
+        <button class="filter-btn" [class.active]="selectedDisponibilidad === 'TODAS'"
+          (click)="selectedDisponibilidad = 'TODAS'; onDisponibilidadChange()">
+          Todas
+        </button>
+        <button class="filter-btn disponible" [class.active]="selectedDisponibilidad === 'DISPONIBLE'"
+          (click)="selectedDisponibilidad = 'DISPONIBLE'; onDisponibilidadChange()">
+          <lucide-icon [img]="CheckCircle2" [size]="16"></lucide-icon>
+          Disponibles
+        </button>
+        <button class="filter-btn no-disponible" [class.active]="selectedDisponibilidad === 'NO_DISPONIBLE'"
+          (click)="selectedDisponibilidad = 'NO_DISPONIBLE'; onDisponibilidadChange()">
+          <lucide-icon [img]="XCircle" [size]="16"></lucide-icon>
+          No Disponibles
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando productos...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && productos.length === 0" class="empty-state">
+    <lucide-icon [img]="PackageX" [size]="64" class="empty-icon"></lucide-icon>
+    <h3>No hay productos</h3>
+    <p>Comienza agregando tu primer producto al catálogo</p>
+    <button class="btn-add-empty" (click)="openForm()">
+      <lucide-icon [img]="Plus" [size]="20"></lucide-icon>
+      Agregar Primer Producto
+    </button>
+  </div>
+
+  <!-- Products by Category -->
+  <div *ngIf="!loading && productosFiltrados.length > 0" class="products-content">
+    <div *ngFor="let grupo of getProductosPorCategoria()" class="category-section">
+      <!-- Category Header -->
+      <div class="category-header">
+        <h2>{{ grupo.categoria }}</h2>
+        <span class="product-count">{{ grupo.productos.length }} producto(s)</span>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid">
+        <div *ngFor="let producto of grupo.productos" class="product-card">
+          <!-- Product Image -->
+          <div class="product-image">
+            <img [src]="getImageUrl(producto.imagenUrl)" [alt]="producto.nombre" (error)="onImageError($event)" />
+            <span class="badge" [class.disponible]="producto.disponible" [class.no-disponible]="!producto.disponible">
+              <lucide-icon [img]="producto.disponible ? CheckCircle2 : XCircle" [size]="16"></lucide-icon>
+              {{ producto.disponible ? 'Disponible' : 'No Disponible' }}
+            </span>
+          </div>
+
+          <!-- Product Info -->
+          <div class="product-info">
+            <div class="product-header">
+              <h3 class="product-name">{{ producto.nombre }}</h3>
+              <span class="product-id">#{{ producto.id }}</span>
+            </div>
+
+            <p class="product-description">
+              {{ producto.descripcion || 'Sin descripción' }}
+            </p>
+
+            <div class="product-meta">
+              <div class="meta-item">
+                <lucide-icon [img]="Tag" [size]="16"></lucide-icon>
+                <span>{{ producto.categoria || 'Sin categoría' }}</span>
+              </div>
+              <div class="meta-item price">
+                <lucide-icon [img]="DollarSign" [size]="16"></lucide-icon>
+                <span>${{ (+producto.precio).toFixed(2) }}</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="product-actions">
+              <button class="btn-edit" (click)="openForm(producto)">
+                <lucide-icon [img]="Edit2" [size]="18"></lucide-icon>
+                <span>Editar</span>
+              </button>
+              <button class="btn-delete" (click)="deleteProducto(producto.id)">
+                <lucide-icon [img]="Trash2" [size]="18"></lucide-icon>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results State -->
+  <div *ngIf="!loading && productos.length > 0 && productosFiltrados.length === 0" class="empty-state">
+    <lucide-icon [img]="Search" [size]="64" class="empty-icon"></lucide-icon>
+    <h3>No se encontraron productos</h3>
+    <p>Intenta ajustar los filtros de búsqueda</p>
+  </div>
+  <!-- Modal Form -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ isEditing ? "Editar Producto" : "Nuevo Producto" }}</h2>
+        <button class="btn-close-modal" (click)="closeForm()">
+          <lucide-icon [img]="X" [size]="24"></lucide-icon>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveProducto()" class="product-form">
+        <div class="form-group">
+          <label>
+            <lucide-icon [img]="Type" [size]="16"></lucide-icon>
+            Nombre del Producto *
+          </label>
+          <input type="text" [(ngModel)]="productoForm.nombre" name="nombre" placeholder="Ej: Agua mineral" required />
+        </div>
+
+        <div class="form-group">
+          <label>
+            <lucide-icon [img]="FileText" [size]="16"></lucide-icon>
+            Descripción
+          </label>
+          <textarea [(ngModel)]="productoForm.descripcion" name="descripcion" rows="3"
+            placeholder="Describe brevemente el producto..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <lucide-icon [img]="DollarSign" [size]="16"></lucide-icon>
+              Precio *
+            </label>
+            <input type="number" [(ngModel)]="productoForm.precio" name="precio" step="0.01" min="0" placeholder="0.00"
+              required />
+          </div>
+
+          <div class="form-group">
+            <label>
+              <lucide-icon [img]="Tag" [size]="16"></lucide-icon>
+              Categoría
+            </label>
+            <input type="text" [(ngModel)]="productoForm.categoria" name="categoria"
+              placeholder="Ej: Bebidas, Snacks" />
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>
+            <lucide-icon [img]="Layers" [size]="16"></lucide-icon>
+            Variantes (Opcional - Tallas, Sabores)
+          </label>
+
+          <div class="variantes-container">
+            <div *ngIf="productoForm.variantes && productoForm.variantes.length > 0" class="variantes-list">
+              <div *ngFor="let v of productoForm.variantes; let i = index" class="variante-item">
+                <span class="variante-info">
+                  <strong>{{ v.nombre }}</strong>
+                  <span class="variante-price">${{ v.precio }}</span>
+                </span>
+                <button type="button" class="btn-remove-var" (click)="removeVariante(i)">
+                  <lucide-icon [img]="Trash2" [size]="14"></lucide-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="add-variante-row">
+              <input type="text" [(ngModel)]="newVariante.nombre" name="newVarNombre" placeholder="Nombre (ej. Grande)"
+                class="input-var-name">
+              <input type="number" [(ngModel)]="newVariante.precio" name="newVarPrecio" placeholder="Precio ($)"
+                class="input-var-price">
+              <button type="button" class="btn-add-var" (click)="addVariante()" [disabled]="!newVariante.nombre">
+                <lucide-icon [img]="Plus" [size]="16"></lucide-icon>
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <lucide-icon [img]="ImageIcon" [size]="16"></lucide-icon>
+            Imagen del Producto
+          </label>
+          <app-image-upload [currentImageUrl]="productoForm.imagenUrl" [uploadType]="'product'"
+            (imageUploaded)="onImageUploaded($event)">
+          </app-image-upload>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="productoForm.disponible" name="disponible" />
+            <span class="checkbox-text">
+              <lucide-icon [img]="CheckCircle2" [size]="18"></lucide-icon>
+              Producto disponible para la venta
+            </span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="closeForm()" class="btn-cancel">
+            <lucide-icon [img]="X" [size]="18"></lucide-icon>
+            Cancelar
+          </button>
+          <button type="submit" class="btn-save">
+            <lucide-icon [img]="Save" [size]="18"></lucide-icon>
+            {{ isEditing ? "Actualizar" : "Guardar" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<app-confirm-dialog *ngIf="showConfirmDialog" title="¿Estás seguro?" [message]="confirmDialogMessage" type="danger"
+  confirmText="Eliminar" cancelText="Cancelar" (confirm)="onConfirmAction()" (cancel)="onCancelAction()">
+</app-confirm-dialog>

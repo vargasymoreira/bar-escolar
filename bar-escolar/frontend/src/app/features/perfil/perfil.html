@@ -1,0 +1,133 @@
+<div class="profile-page-container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a routerLink="/menu" class="back-link">
+            <lucide-icon [img]="ArrowLeft" [size]="20"></lucide-icon>
+            <span>Volver al Menú</span>
+        </a>
+    </div>
+
+    <!-- Header Section -->
+    <header class="profile-header">
+        <div class="header-content">
+            <h1 class="page-title">Configuración de Perfil</h1>
+            <p class="page-subtitle">Personaliza tu información y cómo te ven los demás</p>
+        </div>
+    </header>
+
+    <div class="profile-layout">
+        <!-- Sidebar - Profile Summary -->
+        <aside class="profile-sidebar">
+            <div class="profile-sidebar-card">
+                <div class="avatar-manager">
+                    <div class="avatar-display">
+                        <img *ngIf="imagenUrl; else defaultAvatar" [src]="getImageUrl(imagenUrl)" alt="Avatar">
+                        <ng-template #defaultAvatar>
+                            <div class="avatar-placeholder">
+                                <lucide-icon [img]="UserIcon" [size]="48"></lucide-icon>
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div class="avatar-actions">
+                        <app-image-upload (imageUploaded)="onImageUploaded($event)" [currentImageUrl]="imagenUrl"
+                            uploadType="avatar">
+                        </app-image-upload>
+                    </div>
+                </div>
+
+                <div class="user-summary">
+                    <h2 class="summary-name">{{ nombre || 'Tu Nombre' }}</h2>
+                    <p class="summary-email">{{ email }}</p>
+                    <span class="role-badge" [class.admin]="currentUser?.role === 'ADMIN_BAR'">
+                        {{ currentUser?.role === 'ADMIN_BAR' ? 'Administrador' : 'Estudiante' }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="sidebar-tips">
+                <div class="tip-card">
+                    <lucide-icon [img]="Camera" [size]="18"></lucide-icon>
+                    <p>Usa una foto cuadrada para mejores resultados.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content - Forms -->
+        <main class="profile-main">
+            <section class="form-section">
+                <div class="section-header">
+                    <h3>Información Personal</h3>
+                    <p>Detalles básicos de tu cuenta</p>
+                </div>
+
+                <form (ngSubmit)="saveProfile()" #profileForm="ngForm" class="clean-form">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="nombre">Nombre Completo</label>
+                            <div class="input-container">
+                                <lucide-icon [img]="UserIcon" [size]="18" class="field-icon"></lucide-icon>
+                                <input type="text" id="nombre" name="nombre" [(ngModel)]="nombre" required
+                                    placeholder="Ingresa tu nombre completo">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="cedula">Cédula de Identidad</label>
+                            <div class="input-container disabled">
+                                <lucide-icon [img]="UserIcon" [size]="18" class="field-icon"></lucide-icon>
+                                <input type="text" id="cedula" name="cedula" [(ngModel)]="cedula" disabled>
+                            </div>
+                            <span class="lock-hint">La cédula no puede modificarse</span>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="email">Correo Electrónico</label>
+                            <div class="input-container disabled">
+                                <lucide-icon [img]="Mail" [size]="18" class="field-icon"></lucide-icon>
+                                <input type="email" id="email" name="email" [(ngModel)]="email" disabled>
+                            </div>
+                            <span class="lock-hint">El correo no puede modificarse</span>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="section-header">
+                        <h3>Seguridad</h3>
+                        <p>Cambia tu contraseña si lo deseas</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="password">Nueva Contraseña</label>
+                            <div class="input-container">
+                                <lucide-icon [img]="Lock" [size]="18" class="field-icon"></lucide-icon>
+                                <input type="password" id="password" name="password" [(ngModel)]="password"
+                                    placeholder="Dejar en blanco para no cambiar">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Contraseña</label>
+                            <div class="input-container">
+                                <lucide-icon [img]="Lock" [size]="18" class="field-icon"></lucide-icon>
+                                <input type="password" id="confirmPassword" name="confirmPassword"
+                                    [(ngModel)]="confirmPassword" placeholder="Verifica tu contraseña">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="submit-btn" [disabled]="loading || !profileForm.valid">
+                            <span class="btn-content" *ngIf="!loading">
+                                <lucide-icon [img]="Save" [size]="22"></lucide-icon>
+                                <span>Guardar</span>
+                            </span>
+                            <div class="loader" *ngIf="loading"></div>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>

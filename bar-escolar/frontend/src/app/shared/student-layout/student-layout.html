@@ -1,0 +1,82 @@
+<div class="student-layout">
+    <!-- Top Navbar -->
+    <header class="navbar">
+        <div class="navbar-content">
+            <!-- Brand -->
+            <div class="navbar-brand">
+                <lucide-icon [img]="UtensilsCrossed" [size]="28" class="brand-icon"></lucide-icon>
+                <span class="brand-text">Bar Escolar</span>
+            </div>
+
+            <!-- Right Section -->
+            <div class="navbar-right">
+                <!-- Cart Link with Badge -->
+                <a routerLink="/carrito" class="nav-icon-link" title="Carrito">
+                    <lucide-icon [img]="ShoppingCart" [size]="24"></lucide-icon>
+                    <span class="cart-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+                </a>
+
+                <!-- Mis Pedidos Link -->
+                <a routerLink="/mis-pedidos" class="nav-icon-link" title="Mis Pedidos">
+                    <lucide-icon [img]="ClipboardList" [size]="24"></lucide-icon>
+                </a>
+
+                <!-- Profile Section -->
+                <div class="profile-section">
+                    <button class="profile-button" (click)="toggleProfileDropdown()">
+                        <div class="profile-avatar">
+                            <img *ngIf="currentUser?.imagenUrl; else defaultAvatar"
+                                [src]="getImageUrl(currentUser.imagenUrl)" alt="Avatar" class="avatar-img">
+                            <ng-template #defaultAvatar>
+                                <lucide-icon [img]="User" [size]="20"></lucide-icon>
+                            </ng-template>
+                        </div>
+                        <div class="profile-info">
+                            <span class="profile-name">{{ studentName }}</span>
+                            <span class="profile-role">Estudiante</span>
+                        </div>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown" *ngIf="showProfileDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar">
+                                <img *ngIf="currentUser?.imagenUrl; else defaultDropdownAvatar"
+                                    [src]="getImageUrl(currentUser.imagenUrl)" alt="Avatar" class="avatar-img">
+                                <ng-template #defaultDropdownAvatar>
+                                    <lucide-icon [img]="User" [size]="24"></lucide-icon>
+                                </ng-template>
+                            </div>
+                            <div class="dropdown-info">
+                                <p class="dropdown-name">{{ studentName }}</p>
+                                <p class="dropdown-email">{{ studentEmail }}</p>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a routerLink="/perfil" (click)="showProfileDropdown = false" class="dropdown-item">
+                            <lucide-icon [img]="User" [size]="18"></lucide-icon>
+                            <span>Mi Perfil</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <button type="button" (click)="logout(); $event.stopPropagation()" class="dropdown-item logout">
+                            <lucide-icon [img]="LogOut" [size]="18"></lucide-icon>
+                            <span>Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>
+
+<!-- Dropdown Backdrop -->
+<div class="dropdown-backdrop" *ngIf="showProfileDropdown" (click)="toggleProfileDropdown()"></div>

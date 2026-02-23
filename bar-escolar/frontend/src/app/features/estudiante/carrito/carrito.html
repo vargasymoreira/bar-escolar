@@ -1,0 +1,105 @@
+<div class="cart-container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a routerLink="/menu" class="back-link">
+            <lucide-icon [img]="ArrowLeft" [size]="20"></lucide-icon>
+            <span>Volver al Menú</span>
+        </a>
+    </div>
+    <!-- Empty Cart State -->
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
+        <div class="empty-cart-icon">
+            <lucide-icon [img]="ShoppingCart" [size]="64"></lucide-icon>
+        </div>
+        <h2>Tu carrito está vacío</h2>
+        <p>Agrega productos desde el menú para comenzar tu pedido</p>
+        <a routerLink="/menu" class="btn-primary">
+            Explorar Menú
+        </a>
+    </div>
+
+    <!-- Cart with Items -->
+    <div *ngIf="cartItems.length > 0" class="cart-content">
+        <!-- Cart Items List -->
+        <div class="cart-items-section">
+            <h2 class="section-title">Productos ({{ cartItems.length }})</h2>
+
+            <div class="cart-items">
+                <div *ngFor="let item of cartItems" class="cart-item">
+                    <!-- Item Image -->
+                    <div class="item-image">
+                        <img [src]="getImageUrl(item.producto.imagenUrl)" [alt]="item.producto.nombre" />
+                    </div>
+
+                    <!-- Item Details -->
+                    <div class="item-details">
+                        <h3 class="item-name">
+                            {{ item.producto.nombre }}
+                            <span *ngIf="item.variante" class="item-variant">({{ item.variante.nombre }})</span>
+                        </h3>
+                        <p class="item-price">$ {{ (item.variante ? +item.variante.precio :
+                            +item.producto.precio).toFixed(2) }} c/u</p>
+                    </div>
+
+                    <!-- Quantity Controls -->
+                    <div class="item-quantity">
+                        <button (click)="updateQuantity(item, item.cantidad - 1)" class="qty-btn"
+                            [disabled]="item.cantidad <= 1">
+                            <lucide-icon [img]="Minus" [size]="16"></lucide-icon>
+                        </button>
+                        <span class="quantity">{{ item.cantidad }}</span>
+                        <button (click)="updateQuantity(item, item.cantidad + 1)" class="qty-btn">
+                            <lucide-icon [img]="Plus" [size]="16"></lucide-icon>
+                        </button>
+                    </div>
+
+                    <!-- Item Subtotal -->
+                    <div class="item-subtotal">
+                        <span class="subtotal-label">Subtotal</span>
+                        <span class="subtotal-value">$ {{ getSubtotal(item).toFixed(2) }}</span>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <button (click)="removeItem(item)" class="remove-btn" title="Eliminar producto">
+                        <lucide-icon [img]="Trash2" [size]="20"></lucide-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h2 class="summary-title">Resumen del Pedido</h2>
+
+            <div class="summary-details">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span class="amount">$ {{ getTotal().toFixed(2) }}</span>
+                </div>
+
+                <div class="summary-row total-row">
+                    <span>Total</span>
+                    <span class="amount">$ {{ getTotal().toFixed(2) }}</span>
+                </div>
+            </div>
+
+            <div *ngIf="error" class="error-message">
+                {{ error }}
+            </div>
+
+            <button (click)="confirmarPedido()" [disabled]="loading" class="btn-confirm">
+                <lucide-icon [img]="CheckCircle" [size]="20"></lucide-icon>
+                <span>{{ loading ? 'Procesando...' : 'Confirmar Pedido' }}</span>
+            </button>
+
+            <p class="summary-note">
+                Tu pedido será preparado una vez confirmado
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Dialog -->
+<app-confirm-dialog *ngIf="showConfirmDialog" title="¿Estás seguro?" [message]="confirmDialogMessage" type="warning"
+    confirmText="Confirmar" cancelText="Cancelar" (confirm)="onConfirmAction()"
+    (cancel)="onCancelAction()"></app-confirm-dialog>
